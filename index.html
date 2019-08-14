@@ -8,16 +8,110 @@
     <title>Document</title>
     <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
         type="text/javascript"></script>
+    <style>
+        #content {
+            max-width: 50em;
+            margin: 0 auto;
+        }
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto
+        }
+    </style>
 </head>
 
 <body>
-    $$
-    M = \left( \begin{array}{ccc}
-    x_{11} & x_{12} & \ldots \\
-    x_{21} & x_{22} & \ldots \\
-    \vdots & \vdots & \ldots \\
-    \end{array} \right)
-    $$
+    <div id="content">
+        <h1 class="title">Backpropagation Derivation + Javscript</h1>
+
+        In this blog post we're going on an Odyssey to decipher the mysteries of the backpropagation algorithm which is
+        a core element of supervised learning of a neural networks. You should aready have some basic knowledge about
+        neurol networks to follow the text.
+        In the end we'll implement an example in Javascript.
+        Yes, JS. You've read it right.
+        <br />
+        But first, let's prey to the Gods and invoke the Muse.
+        <br />
+        O divine Muse, goddess, daughter of Zeus, sutain for me this description, full of mysterious Greek symbols,
+        named
+        Mathematics by the gods, to make it
+        understandable for us mortal people.
+
+        <p>
+            Let's start with a simple perceptron:
+        </p>
+        <img src="perceptron.svg" />
+        <p>
+            We want to simulate a simple AND gatter with this perceptron, which outputs only 1 (true) if our attributes,
+            x_1
+            and x_2 are 1 (true). If not it outputs 0 (false).
+        </p>
+        $$
+        \left[
+        \begin{array}{cc|c}
+        x_{1}&x_{2}&Expected \, output \, ô\\
+        1&1&1\\
+        0&1&0\\
+        1&0&0\\
+        0&0&0
+        \end{array}
+        \right]
+        $$
+        <p>
+            Our percepton uses a simple step function f(x) as activation function.
+            $$f(x) = 1 \, if \, net(x) \ge Threshold$$
+            $$f(x) = 0 \, if \, net(x) \lt Threshold$$
+            $$with: net(x) = \sum_{j} w_{ij} * x_{i}$$ and Threshold =
+            Which just means if we do $$w_{1}*x_{1} + w_{2}*x_{2} \ge Threshold$$ then the expected output should be 1
+            (true), if not then it should be 0 (false). We expect that if we feed our neural network with a sample of
+            the form s={x1,x2} that our output o, is equal to ô. For example for sample s1={1,1} we expect o to be equal
+            to ô,
+            which is 1 for s1 and for sample s2={0,1} we expect o to be 0.
+            The threshold and weights are randomly initialized.
+            To teach something to our perceptron we need to be able to update our weights until we get the correct,
+            expected output ô for our inputs. To be able to do that we repeatedly apply the delta rule for every weight:
+            $$w_{ij\Delta} = \alpha * x_{i} * (ô - o)$$
+            and update our weight by adding $$w_{ij\Delta}$$ to the weight:
+            $$w_{ij} := w_{ij} + w_{ij\Delta}$$
+            Let's say our Threshold is 0.5. And the weights are
+            initialized with w_1 = 0.1 and w_2 = 0.8.
+        </p>
+        TODO: Add image
+        <p>
+            During the training phase we first feed our perceptron with the sample s1= {0,1}. We apply net = 0.1*0 +
+            0.8*1 = 0.8. Now we apply the step function f(x). f(0.8) > Threshold, with Threshold=0.5
+        </p>
+        ...
+        <br /> <br />
+        <br /> <br />
+        <hr />
+        <img src="nn.svg" />
+
+
+        <p>
+            This network has an input layer, a hidden layer and an output layer.
+            Because of the hidden layer we can't use the simple Delta rule to teach our network how to behave.
+        </p>
+
+        <h2>Error / Cost Function & Gradient Descent</h2>
+        <p>
+            The cost function contains all errors
+        </p>
+        <h2>Backpropagation</h2>
+        <h3>Forward Propagation - Troia</h3>
+        <h3>Backpropagation Derivation - </h3>
+        <h3>Algorithm</h3>
+        <h2>Javascript Example</h2>
+        $$
+        M = \left( \begin{array}{ccc}
+        x_{11} & x_{12} & \ldots \\
+        x_{21} & x_{22} & \ldots \\
+        \vdots & \vdots & \ldots \\
+        \end{array} \right)
+        $$
+    </div>
 </body>
 
 </html>
