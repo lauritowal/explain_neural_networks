@@ -6,8 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-        type="text/javascript"></script>
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+            processEscapes: true
+        }
+    });
+    </script>
+
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    </script>
     <style>
         #content {
             max-width: 50em;
@@ -19,16 +28,21 @@
             margin-left: auto;
             margin-right: auto
         }
+
+        body {
+            font-size: 1.3em;
+            line-height: 1.3em;
+        }
     </style>
 </head>
 
 <body>
     <div id="content">
-        <h1 class="title">Backpropagation Derivation + Javscript</h1>
+        <h1 class="title">Backpropagation Derivation + Javascript</h1>
 
         In this blog post we're going on an Odyssey to decipher the mysteries of the backpropagation algorithm which is
-        a core element of supervised learning of a neural networks. You should aready have some basic knowledge about
-        neurol networks to follow the text.
+        a core element of supervised learning of a neural networks. It is for people who already worked a bit with
+        neural networks before but want dive deeper into the math behind the back propagation algorithm.
         In the end we'll implement an example in Javascript.
         Yes, JS. You've read it right.
         <br />
@@ -37,7 +51,7 @@
         O divine Muse, goddess, daughter of Zeus, sutain for me this description, full of mysterious Greek symbols,
         named
         Mathematics by the gods, to make it
-        understandable for us mortal people.
+        understandable for us mortal men.
 
         <p>
             Let's start with a simple perceptron:
@@ -45,8 +59,8 @@
         <img src="perceptron.svg" />
         <p>
             We want to simulate a simple AND gatter with this perceptron, which outputs only 1 (true) if our attributes,
-            x_1
-            and x_2 are 1 (true). If not it outputs 0 (false).
+            $x_1$
+            and $x_2$ are 1 (true). If not it outputs 0 (false).
         </p>
         $$
         \left[
@@ -61,282 +75,368 @@
         $$
         <p>
             Our percepton uses a simple step function f(x) as activation function.
-            $$f(x) = 1 \, if \, net(x) \ge Threshold$$
-            $$f(x) = 0 \, if \, net(x) \lt Threshold$$
-            $$with: net(x) = \sum_{j} w_{ij} * x_{i}$$ and Threshold =
-            Which just means if we do $$w_{1}*x_{1} + w_{2}*x_{2} \ge Threshold$$ then the expected output should be 1
-            (true), if not then it should be 0 (false). We expect that if we feed our neural network with a sample of
-            the form s={x1,x2} that our output o, is equal to ô. For example for sample s1={1,1} we expect o to be equal
-            to ô,
-            which is 1 for s1 and for sample s2={0,1} we expect o to be 0.
-            The threshold and weights are randomly initialized.
-            To teach something to our perceptron we need to be able to update our weights until we get the correct,
-            expected output ô for our inputs. To be able to do that we repeatedly apply the delta rule for every weight:
-            $$w_{ij\Delta} = \alpha * x_{i} * (ô - o)$$
-            and update our weight by adding $$w_{ij\Delta}$$ to the weight:
-            $$w_{ij} := w_{ij} + w_{ij\Delta}$$
-            Let's say our Threshold is 0.5. And the weights are
-            initialized with w_1 = 0.1 and w_2 = 0.8. alpha is 0.7.
+            $$f(x) = 1 \, if \, net \ge Threshold$$
+            $$f(x) = 0 \, if \, net \lt Threshold$$
+            $$with: net = \sum_{j} w_{ij} * x_{i}$$ and Threshold.
         </p>
-        TODO: Add image
         <p>
-            During the training phase we first feed our perceptron with the sample s1={0,1} with the expected ouput o=0.
+            Which just means if we do $$net = w_{1}*x_{1} + w_{2}*x_{2}$$ $$net \ge Threshold$$ then the
+            output o of $f(net)$ will be 1.
+            (true), if not then it will be 0 (false). </p>
+
+        <p>We expect that if we feed our perceptron with a sample of
+            the form $s=[x1,x2]$ that the output o, is equal to ô.
+            <br />
+            For example, for sample $s1=[1,1]$ we expect output o to be equal to ô, which is 1.
+            <br />
+            On the other hand, for sample s2=[0,1] we expect o to be 0.
+        </p>
+        <h2>Delta rule</h2>
+        <p>
+            The threshold and weights of our perceptron are randomly initialized.
+            To teach something to our perceptron we need to be able to update our weights until we get the correct,
+            expected output ô for our inputs.
+        </p>
+        <p>
+            Let's have a look at the delta rule with the following example to train our perceptron. We repeatedly apply
+            the delta rule for every weight:
+            $$\Delta w_{ij} = \alpha * x_{i} * (ô - o)$$
+            and update a weight by adding $\Delta w_{ij}$ to the weight:
+            $$w_{ij} := w_{ij} + \Delta w_{ij}$$
+        </p>
+        <h3>Example</h3>
+        <p>
+            $\alpha$ is a constant which we initialize with 0.3.
+            Let's say our Threshold is 0.5 and the weights are
+            initialized with $w_1 = 0.1$ and $w_2 = 0.8$.
+        </p>
+        <p>
+            During the training phase we first feed our perceptron with the sample $s1=[0,1]$. The expected ouput of s1
+            is
+            $ô=0$.
             <ol>
                 <li>
-                    We apply net = 0.1*0 + 0.8*1 = 0.8.
+                    We calculate $net = 0.1*0 + 0.8*1 = 0.8.$
                 </li>
                 <li>
-                    Now we apply the step function f(x) with Threshold=0.5. f(0.8) > Threshold. 0.8 is greater then 0.5,
-                    which means the output of the perceptron is 1. However, we want it to be 0 in this case.
+                    Now, we apply the step function f(x) with $Threshold=0.5$ $\rightarrow$ f(0.8) $\rightarrow$ 0.8 >
+                    Threshold. <br />0.8 is greater than 0.5, which means the output of the perceptron is 1.
+                    <br /> However, the expected output ô for this sample is 0.
                 </li>
                 <li>
-                    We calculate $$ô - o = 0-1 = -1$$ and apply the delta rule to our weights: $$w_{ij\Delta} = \alpha *
+                    We calculate $$ô - o = 0-1 = -1$$ and apply the delta rule to our weights: $$\Delta w_{ij} = \alpha
+                    *
                     x_{i} * (ô - o)$$
-                    $$w_{1\Delta} = 0.7 * 0.1 * (-1) = -0.07$$
-                    $$w_{2\Delta} = 0.7 * 0.8 * (-1) = -0.56$$
+                    $$\Delta w_{1} = 0.3 * 0.1 * (-1) = -0.03$$
+                    $$\Delta w_{2} = 0.3 * 0.8 * (-1) = -0.24$$
                     And we use them to update our coresponding weights:
-                    $$w_{1} = w_{1} + w_{1\Delta} = 0.1-0.07 = 0.03$$
-                    $$w_{2} = w_{2} + w_{2\Delta} = 0.8-0.56 = 0.24$$
+                    $$w_{1} = w_{1} + \Delta w_{1} = 0.1-0.03 = 0.07$$
+                    $$w_{2} = w_{2} + \Delta w_{2} = 0.8-0.24 = 0.56$$
                 </li>
                 <li>
-                    With the new weights we repeat the 1. step: net = 0.03*0 + 0.24*1 = 0.24
+                    With the new weights we repeat the 1. step: $net = 0.07*0 + 0.56*1 = 0.56$
                 </li>
                 <li>
-                    We apply the step function again: f(0.24) > Threshold --> 0.24 smaller
-                    Threshold. In this case 0.24 is smaller than 0.5 and we get f(0.24) = o = 1. Since (ô - o) = (1-1)
+                    We apply the step function again: $f(0.56). 0.56 > Threshold \rightarrow 0.56 > 0.5$ <br />
+                    In this case 0.56 is greater than 0.5 and we get f(0.56) = o = 1. Since (ô - o) = (1-1)
                     = 0 and
-                    $$w_{ij\Delta} = \alpha * x_{i} * (ô - o) = \alpha * x_{i} * 0 = 0 $$ is also 0,
+                    $$w\Delta_{ij} = \alpha * x_{i} * (ô - o) = \alpha * x_{i} * 0 = 0 $$ is also 0,
                     there is no need to update our weights.
                 </li>
                 <li>We need to repeat this process for all our samples until the pereceptron classifies them correctly.
                 </li>
             </ol>
         </p>
-        <p>Let's implement the training algorithm in javascript. We use math.js. Install it via npm.</p>
+        <p>Let's implement the training algorithm in Javascript. We are going to use math.js which you can install
+            via npm:</p>
+        <pre>npm install mathjs</pre>
+        <p>Here is the implementation</p>
         <pre>
-                const samples = [[0, 0], [1, 0], [1, 1], [0, 1]];
-                const expected_outpus = [0, 0, 1, 0];
-                let weights = [0.1, 0.8]; 
+            const samples = [[0, 0], [1, 0], [1, 1], [0, 1]];
+            const expected_outpus = [0, 0, 1, 0];
+            let weights = [0.1, 0.8]; 
+        
+            const ALPHA = 0.3;
+            const THRESHOLD = 0.5;
 
-                const ALPHA = 0.3;
-                const THRESHOLD = 0.5;
+            const net = (w, x) => math.sum(math.dotMultiply(w, x));
+            const f = w => w > THRESHOLD ? 1 : 0;
 
-                const net = (w, x) => math.sum(math.dotMultiply(w, x));
-                const f = w => w > THRESHOLD ? 1 : 0;
-
-                // Let's train our perceptron by repeatedly applying the delta rule to update our weights
-                for(let i=0; i<10; i++) {
-                    samples.forEach((sample, i) => {
-                        const output = f(net(weights, sample));
+            // Let's train our perceptron by repeatedly applying the delta rule to update our weights
+            for(let i=0; i<10; i++) {
+                samples.forEach((sample, i) => {
+                    const output = f(net(weights, sample));
     
-                        weights[0] = weights[0] + ALPHA * sample[0] * (expected_outpus[i] - output);
-                        weights[1] = weights[1] + ALPHA * sample[1] * (expected_outpus[i] - output)
-                    });
-                }
+                    weights[0] = weights[0] + ALPHA * sample[0] * (expected_outpus[i] - output);
+                    weights[1] = weights[1] + ALPHA * sample[1] * (expected_outpus[i] - output)
 
-        </pre>
-        As you can see in the console, the weights do not change after a certain iteration. They halt at: w1=0.1, w2=0.5
-        The perceptron is trained.
-        If you feed it with e.g. s={1,0} it will output 0 for false as expected. net = 0.1*1 + 0.5*0 = 0.1. f(0.1) = 0.1
-        smaller Threshold => 0 <br />
+                    console.log("weights", weights);
+                });
+            }
+     </pre>
+        As you can see in the console, the weights do not change after a certain iteration.
+        They stay at: $w1=0.1$,$w2=0.5$
+        <br /> If you would feed it with e.g. $s=[1,0]$ it will output 0, for false, as expected. <br />
+        $$net = 0.1*1 + 0.5*0 = 0.1 \rightarrow f(0.1) \rightarrow 0.1
+        < Threshold \rightarrow f(0.1)=0$$ <p>
+            <h3>Problem of perceptron</h3>
+            The problem with the perceptron is, that it is very limited.
+            <h4>Linear Sparability</h4>
+            <p>
+                Let's plot the samples $s1=[0,0],s2=[0,1],s3=[1,0],s4=[1,1]$ of our AND perceptron as points on a graph,
+                where
+                the x-axis is x2 and
+                the y-axis is
+                x1. The black dots represent the classification 1 (or true) and the white dots represent the
+                classification
+                0.
+            </p>
+            <img src="linearSepAnd.svg">
+            We are able to draw a line between the white (false) and black (true) classfied samples. This is called
+            <strong>linear separability</strong>. The Perceptron can only be used on a training set if it is linear
+            separability is guaranteed. It can't classify samples correctly where this is not the case, as for XOR.
+            </p>
+            <h4>XOR</h4>
+            The expected outputs for XOR for our inputs are:
+            $$
+            \left[
+            \begin{array}{cc|c}
+            x_{1}&x_{2}&Expected \, output \, ô\\
+            1&1&0\\
+            0&1&1\\
+            1&0&1\\
+            0&0&0
+            \end{array}
+            \right]
+            $$
+            <p>If we plot that we get the following:</p>
+            <img src="linearSepXor.svg">
+            We are not able to draw a line between the two classes white (true) and black (false) to separete them.
+            <br />
+            That's why we need neural networks to be able to handle more complex problems.
+            <br /> <br />
+            <hr />
+            <h2>Neural Network</h2>
+            <img src="nn.svg" />
 
-        <p>
-            The problem with the perceptron is very limited and we can only a create linear separable classificator. For
-            exmaple XOR can't emulated using a perceptron.
-            (TODO: Explain more)
-        </p>
+            <p>
+                To allow creating more complex applications we need more neurons and layers. A neural network is nothing
+                more than many connected perceptrons. The output of one perceptron is the input of the next perceptron
+                in the next layer. <br />
+                This network has an input layer, a hidden layer and an output layer.
+                Because of the hidden layer we can't use the simple Delta rule to teach our network how to
+                behave. We need to do some extra work there.
+            </p>
 
-        <br /> <br />
-        <hr />
-        <img src="nn.svg" />
+            <h2>Error / Cost Function & Gradient Descent</h2>
+            $$ E = \frac{1}{2} \sum_{s} (ô^s-o^s)^2$$
 
-        <p>
-            To allow creating more complex applications we need more layers as in the image above.
-            This network has an input layer, a hidden layer and an output layer.
-            Because of the hidden layer we can't use the simple Delta rule to teach our network how to
-            behave. We need to do some extra work there.
-        </p>
+            <p>E is just a summation of all errors for all samples s. It tells us how good or bad our neural network is
+                in classifing all our samples correctly. E therefore, is the global error of our network. E is called
+                the
+                error or cost function.
+            </p>
+            <p>
+                The vector ô is the expected output for the sample
+                s and the
+                output is given by o which is a function
+                over ALL
+                weights in
+                all layers in
+                our neural network.
+            </p>
+            <p>
+                To train the neural network we need to minimize the global Error, the cost function. The simpliest
+                approach to get a minimum of a function is to take the derivation of it. Since a
+                neural network can have
+                billions
+                of attributes instead of two (x1, x2) as shown above, we can't do that. This
+                would take ages. Instead we use a technique called
+                <strong>Gradient
+                    Descent</strong>.
+            </p>
+            <p>Let's say we have just two attributes as above. (This makes it possible to plot in the 3D space)</p>
+            <h4>Forward Propagation</h4>
+            <p>
+                We calculate the output $o$ of our neural network by using forward propagation, for the first sample,
+                which
+                works just like the perceptron. We calculate $net$ and $f$ for every neuron in every layer. The output
+                of a neuron will
+                serve as input for the neurons in the next layer. Except the neurons of the output layer, which will
+                output the result of the network for a given sample.
+            </p>
+            <img src="gradientDescent.png" />
+            <p>We now try to get a bit closer to the minimum, which should be exactly at $(x:0, y:0, z:0)$ in our graph.
+                We
+                achieve this by changing the weights in our network in
+                a
+                way that the output and expected output get closer. This means we need to update all weights with their
+                corresponding $\Delta w$ $$\Delta w_{mn} = -\alpha * \partial{E}/\partial{w_{mn}} .$$ The partial
+                derivative
+                is
+                the
+                slope
+                in the
+                direction of the weight w_mn. Alpha is a constant wich tells us far much we need to move down on each
+                step.
+                Having all the $\Delta w$'s we know how far we need to move in every direction of a weight. We 'collect'
+                all this down movements and calculate the 'avarage' movement of all of them: $$E\Delta=
+                \sum_{mn} \partial{E}/\partial{w_{mn}} * \Delta w = \sum_{mn} \partial{E}/\partial{w_{mn}} * -\alpha *
+                \partial{E}/\partial{w_{mn}} = -\alpha \sum_{mn} [\partial{E}/\partial{w_{mn}}]^2 $$</p>
+            <p>Now update E like the following: $$E = E\Delta + E_s$$</p> s is the Error for our first sample.
+            <p>We repeat this procedure for all our samples and until we've reached the minimum. To actually calculate
+                the
+                partial derivatives of all our weights we use backpropagation.</p>
 
-        <h2>Error / Cost Function & Gradient Descent</h2>
-        $$ E = \frac{1}{2} \sum_{s} (ô^s-o^s)^2$$
+            <h2>Backpropagation</h2>
+            As we don't know what the expected ouput ô of every neuron in the hidden layers is supposed to be we use
+            backpropagation to propagate the ouput error (ô-o) of the output layer back to all the hidden layers. It
+            calculates the partials
+            $$\partial{E}/\partial{w_{mn}}$$ for every weight in the network to calculate the corresponding w_delta to
+            update the weight. These are the update rules for each weight:
+            <ol>
+                <li>$$\delta_i = f'(net_i)*(ô_i-o_i)$$</li>
+                <li>For the ouput layer: $$w_\Delta = \alpha * o_{j} * \delta_i$$</li>
+                <li>For the hidden layers: $$w_\Delta=\alpha * o_{i} * f'(net) * \sum_{k}(\delta_k*w_{ki})$$</li>
+            </ol>
+            <p>
+                o_j is the activation of the previous neuron. $$\sum_{k}(\delta_k*w_{ki})$$ is the summation of the
+                product
+                of errors
+                and weights of the next layer closer to the final output layer (until recursively the final layer is
+                reached)
+            </p>
 
-        <p>The vector ô is the expected output for the sample s and the output is given by o which is a function
-            over ALL
-            weights in
-            all layers in
-            our neural network.
-        </p>
-        <p>
-            To train the neurol network we need to minimize this cost function. Since a neural network can have billions
-            of attributes instead of three as shown above, we can't just take the derivation of the cost function to get
-            it's minimum. This would take forever. Instead we use a technique called 'Gradient Descent'.
-        </p>
-        <p>Let's say we have just three attributes as above. (This makes it possible to plot in the 3D space)</p>
-        <h4>Forward Propagation - Troia</h4>
-        <p>
-            We calculate our cost function by using forward propagation, for the first sample, which works just like the
-            perceptron. TODO:
-            calculate.
-        </p>
-        <p>Now we can plot the cost function:</p>
-        <p>TODO: plot cost function</p>
-        <p>We now try to get a bit closer to the minimum. We achieve this by changing the weights in our network in a
-            way that the expected output and output get closer. This means we need to update all weights with their
-            corresponding w_delta $$w\Delta_{mn} = -\alpha * \partial{E}/\partial{w_{mn}} .$$ The partial derivative is
-            the
-            slope
-            in the
-            direction of the weight w_mn. Alpha is a constant wich tells us far much we need to move down on each step.
-            Having all the w_delta's we know how far we need to move in every direction of a weight. We 'collect'
-            all this down movements and calculate the 'avarage' movement of all of them: $$E\Delta=
-            \sum_{mn} \partial{E}/\partial{w_{mn}} * w\Delta = \sum_{mn} \partial{E}/\partial{w_{mn}} * -\alpha *
-            \partial{E}/\partial{w_{mn}} = -\alpha \sum_{mn} [\partial{E}/\partial{w_{mn}}]^2 $$</p>
-        <p>Now update E like the following: $$E = E\Delta + E_s$$</p> s is the Error for our first sample.
-        <p>We repeat this procedure for all our samples and until we've reached the minimum. To actually calculate the
-            partial derivatives of all our weights we use backpropagation.</p>
+            <h3>Backpropagation Derivation</h3>
+            <p>But how do we get the above two rules? Let's write down the derivation.</p>
+            <p>As we've said. Backpropagation helps us to get the partial derivatives of the cost function for all
+                weights
+                in our network
 
-        <h2>Backpropagation</h2>
-        As we don't know what the expected ouput ô of every neuron in the hidden layers is supposed to be we use
-        backpropagation to propagate the ouput error (ô-o) of the output layer back to all the hidden layers. It
-        calculates the partials
-        $$\partial{E}/\partial{w_{mn}}$$ for every weight in the network to calculate the corresponding w_delta to
-        update the weight. These are the update rules for each weight:
-        <ol>
-            <li>$$\delta_i = f'(net_i)*(ô_i-o_i)$$</li>
-            <li>For the ouput layer: $$w_\Delta = \alpha * o_{j} * \delta_i$$</li>
-            <li>For the hidden layers: $$w_\Delta=\alpha * o_{i} * f'(net) * \sum_{k}(\delta_k*w_{ki})$$</li>
-        </ol>
-        <p>
-            o_j is the activation of the previous neuron. $$\sum_{k}(\delta_k*w_{ki})$$ is the summation of the product
-            of errors
-            and weights of the next layer closer to the final output layer (until recursively the final layer is
-            reached)
-        </p>
+                $$\frac{\partial E}{\partial w_{mn}}$$
 
-        <h3>Backpropagation Derivation</h3>
-        <p>But how do we get the above two rules? Let's write down the derivation.</p>
-        <p>As we've said. Backpropagation helps us to get the partial derivatives of the cost function for all weights
-            in our network
+                to be able to update the weights and decreasing the global error.</p>
 
-            $$\frac{\partial E}{\partial w_{mn}}$$
+            We start with the derivation of a sigle weight w^i_11 on the output layer (See image above between a1 and
+            o1):
+            Since w_mn is not directly a part of the equation of the cost fucntion E
+            $$ E = \frac{1}{2} \sum_{s} (ô^s-o^s)^2$$ we need to apply the chain rule.
+            $$\partial E / \partial w_{mn} = \partial E / \partial w_{mn} * \partial E \ o $$
+            We need to apply the chain rule a second time, because w^i_11 is not part of the function o $$o=f(net)$$
+            $$
+            \frac{\partial E}{\partial w_{mn}} =
+            \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net} *
+            \frac{\partial net}{\partial w_{mn}} $$
+            We can stop applying the chain rule now, because we know the w^i_11 is inside the function net $$ net =
+            \sum_{j}
+            w_{ij} * x_{i}$$
 
-            to be able to update the weights and decreasing the global error.</p>
+            Now partially derive every expression. Since we are looking only at one weight in the ouput layer. Only one
+            neuron is responsible for the outcome. That's why we can remove the sumation from the function E, before
+            deriving:
 
-        We start with the derivation of a sigle weight w^i_11 on the output layer (See image above between a1 and o1):
-        Since w_mn is not directly a part of the equation of the cost fucntion E
-        $$ E = \frac{1}{2} \sum_{s} (ô^s-o^s)^2$$ we need to apply the chain rule.
-        $$\partial E / \partial w_{mn} = \partial E / \partial w_{mn} * \partial E \ o $$
-        We need to apply the chain rule a second time, because w^i_11 is not part of the function o $$o=f(net)$$
-        $$
-        \frac{\partial E}{\partial w_{mn}} =
-        \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net} *
-        \frac{\partial net}{\partial w_{mn}} $$
-        We can stop applying the chain rule now, because we know the w^i_11 is inside the function net $$ net = \sum_{j}
-        w_{ij} * x_{i}$$
+            $$ E = \frac{1}{2}(ô-o)^2$$
 
-        Now partially derive every expression. Since we are looking only at one weight in the ouput layer. Only one
-        neuron is responsible for the outcome. That's why we can remove the sumation from the function E, before
-        deriving:
+            Let's derive step by step:
 
-        $$ E = \frac{1}{2}(ô-o)^2$$
+            $$\frac{\partial E}{\partial w^i_{11}} =
+            -(ô-o) * \frac{\partial o}{\partial net_j} *
+            \frac{\partial net_j}{\partial w^i_{11}} $$
 
-        Let's derive step by step:
+            The derivation of the second expression $$o = f(net_j)$$ is just $$f'(net_j)$$:
 
-        $$\frac{\partial E}{\partial w^i_{11}} =
-        -(ô-o) * \frac{\partial o}{\partial net_j} *
-        \frac{\partial net_j}{\partial w^i_{11}} $$
+            $$\frac{\partial E}{\partial w^i_{11}} =
+            -(ô-o) * f'(net_j) *
+            \frac{\partial net_j}{\partial w^i_{11}} $$
 
-        The derivation of the second expression $$o = f(net_j)$$ is just $$f'(net_j)$$:
+            Now we have $$net_j = \sum_i(w_{ij} * a_{i}) = w^i_{11} * a1 + w^i_{12} * a2$$
 
-        $$\frac{\partial E}{\partial w^i_{11}} =
-        -(ô-o) * f'(net_j) *
-        \frac{\partial net_j}{\partial w^i_{11}} $$
+            and after deriving by $$w^i_{11}$$
+            we get
 
-        Now we have $$net_j = \sum_i(w_{ij} * a_{i}) = w^i_{11} * a1 + w^i_{12} * a2$$
+            $$\frac{\partial E}{\partial w^i_{11}} =
+            -(ô-o) * f'(net_j) * a_i $$
 
-        and after deriving by $$w^i_{11}$$
-        we get
+            Now we set $$\delta = -(ô-o) * f'(net_j)$$ and get our:
+            $$w_\delta = \alpha * a_i * \delta$$
+            for the output layer.
 
-        $$\frac{\partial E}{\partial w^i_{11}} =
-        -(ô-o) * f'(net_j) * a_i $$
+            We repeat the same for the weight $$w^k_{11}$$ between our input layer and our hidden layer.
+            $$
+            \frac{\partial E}{\partial w^k_{11}} =
+            \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
+            \frac{\partial net_j}{\partial w^k_{11}} $$
 
-        Now we set $$\delta = -(ô-o) * f'(net_j)$$ and get our:
-        $$w_\delta = \alpha * a_i * \delta$$
-        for the output layer.
+            This time $$net_j = \sum_i(w_{ij} * a_{i})$$ does not contain our weight
+            $$w^k_{11}$$
+            That's why we need to apply another chain rule. Remember that $$a_i = f(net_i)$$
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            \sum_j(-(ô-o)) * f'(net_j) *
+            \frac{\partial net_j}{\partial a_{i}} *
+            \frac{\partial a_i}{\partial w^k_{11}} $$
 
-        We repeat the same for the weight $$w^k_{11}$$ between our input layer and our hidden layer.
-        $$
-        \frac{\partial E}{\partial w^k_{11}} =
-        \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
-        \frac{\partial net_j}{\partial w^k_{11}} $$
+            Also the activation function of $$a_i = f(net_i)$$ does not contain $$w^k_{11}$$. That's why we apply the
+            chain
+            rule
+            again.
 
-        This time $$net_j = \sum_i(w_{ij} * a_{i})$$ does not contain our weight
-        $$w^k_{11}$$
-        That's why we need to apply another chain rule. Remember that $$a_i = f(net_i)$$
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        \sum_j(-(ô-o)) * f'(net_j) *
-        \frac{\partial net_j}{\partial a_{i}} *
-        \frac{\partial a_i}{\partial w^k_{11}} $$
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
+            \frac{\partial net_j}{\partial a_{i}} *
+            \frac{\partial a_i}{\partial net_i} *
+            \frac{\partial net_i}{\partial w^k_{11}} $$
 
-        Also the activation function of $$a_i = f(net_i)$$ does not contain $$w^k_{11}$$. That's why we apply the chain
-        rule
-        again.
+            Our net_i contains w^k_{11}:
+            $$net_i = \sum_k(w_{ki} * a_{k}) = w^k_{11} * x1 + w^k_{12} * x2$$
 
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
-        \frac{\partial net_j}{\partial a_{i}} *
-        \frac{\partial a_i}{\partial net_i} *
-        \frac{\partial net_i}{\partial w^k_{11}} $$
+            We can stop applying the chain rule now. All we need to do is to resolve the above derivation terms. This
+            time
+            we can't remove the summation from our E function, because we need all the neurons of the output function to
+            get
+            the proper values for weight of the hidden function.
 
-        Our net_i contains w^k_{11}:
-        $$net_i = \sum_k(w_{ki} * a_{k}) = w^k_{11} * x1 + w^k_{12} * x2$$
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
+            \frac{\partial net_j}{\partial a_{i}} *
+            \frac{\partial a_i}{\partial net_i} *
+            \frac{\partial net_i}{\partial w^k_{11}} $$
 
-        We can stop applying the chain rule now. All we need to do is to resolve the above derivation terms. This time
-        we can't remove the summation from our E function, because we need all the neurons of the output function to get
-        the proper values for weight of the hidden function.
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            \sum_j(-(ô-o)) * f_j'(net_j) *
+            w^j_{ij} *
+            f_i'(net_i) *
+            \frac{\partial net_i}{\partial w^k_{11}} $$
 
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
-        \frac{\partial net_j}{\partial a_{i}} *
-        \frac{\partial a_i}{\partial net_i} *
-        \frac{\partial net_i}{\partial w^k_{11}} $$
+            And finally:
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            \sum_j(-(ô-o)) * f_j'(net_j) *
+            w^j_{ij} *
+            f_i'(net_i) *
+            x_k $$
 
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        \sum_j(-(ô-o)) * f_j'(net_j) *
-        w^j_{ij} *
-        f_i'(net_i) *
-        \frac{\partial net_i}{\partial w^k_{11}} $$
+            We set $$\delta = -(ô-o) * f_j'(net_j)$$
 
-        And finally:
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        \sum_j(-(ô-o)) * f_j'(net_j) *
-        w^j_{ij} *
-        f_i'(net_i) *
-        x_k $$
+            and get
 
-        We set $$\delta = -(ô-o) * f_j'(net_j)$$
+            $$\frac{\partial E}{\partial w^k_{11}} =
+            x_k * f_i'(net_i) * \sum_j(\delta *
+            w^j_{ij})
+            $$
 
-        and get
+            $$w\Delta = \alpha *
+            x_k * f_i'(net_i) * \sum_j(\delta *
+            w^j_{ij})$$
+            for the hidden layer.
 
-        $$\frac{\partial E}{\partial w^k_{11}} =
-        x_k * f_i'(net_i) * \sum_j(\delta *
-        w^j_{ij})
-        $$
-
-        $$w\Delta = \alpha *
-        x_k * f_i'(net_i) * \sum_j(\delta *
-        w^j_{ij})$$
-        for the hidden layer.
-
-        <h3>Algorithm</h3>
-        <h2>Javascript Example</h2>
-        $$
-        M = \left( \begin{array}{ccc}
-        x_{11} & x_{12} & \ldots \\
-        x_{21} & x_{22} & \ldots \\
-        \vdots & \vdots & \ldots \\
-        \end{array} \right)
-        $$
+            <h3>Algorithm</h3>
+            <h2>Javascript Example</h2>
+            $$
+            M = \left( \begin{array}{ccc}
+            x_{11} & x_{12} & \ldots \\
+            x_{21} & x_{22} & \ldots \\
+            \vdots & \vdots & \ldots \\
+            \end{array} \right)
+            $$
     </div>
 </body>
 
