@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
     </script>
     <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
@@ -45,12 +45,12 @@
         In the end we'll implement an example in Javascript.
         Yes, JS. You've read it right.
         <br />
-        But first, let's prey to the Gods and invoke the Muse.
+        <!--But first, let's prey to the Gods and invoke the Muse.
         <br />
         O divine Muse, goddess, daughter of Zeus, sutain for me this description, full of mysterious Greek symbols,
         named
         Mathematics by the gods, to make it
-        understandable for us mortal men.
+        understandable for us mortal men.-->
 
         <p>
             Let's start with a simple perceptron:
@@ -255,39 +255,39 @@
                     Descent</strong>.
             </p>
             <p>Let's say we have just two attributes as above. (This makes it possible to plot in the 3D space)</p>
+
+            <p>The minimum as should be exactly at $(x:0, y:0, z:0)$ in our graph.
+                We get to the minimum by changing the weights by in our network in a
+                way that the output and expected output get closer. We achive this by moving down in the direction of
+                every weight. The direction of a weight $w_{mn}$ is represented by the partial derivative (gradient):
+                $$\partial{E}/\partial{w_{mn}}$$
+                This means we need to update all weights with their
+                corresponding $\Delta w$ $$\Delta w_{mn} = -\alpha * \partial{E}/\partial{w_{mn}} .$$ Alpha is a
+                constant wich tells us far much we need to move down on each
+                step.
+                Having all the $\Delta w$'s we know how far we need to move in every direction of a weight. We 'collect'
+                all this down movements and calculate the 'avarage' movement of all of them: $$E\Delta=
+                \sum_{mn} \partial{E}/\partial{w_{mn}} * \Delta w = \sum_{mn} \partial{E}/\partial{w_{mn}} * -\alpha *
+                \partial{E}/\partial{w_{mn}} = -\alpha \sum_{mn} [\partial{E}/\partial{w_{mn}}]^2 $$</p>
+            <p>Now we update E like the following: $$E = E\Delta + E_s$$</p> s is the Error for our first sample.
+            <p>We repeat this procedure for all our samples and until we've reached the minimum. </p>
+            But how do we calculate our gradients?
+            <img src="gradientDescent.png" />
+
+            <h2>Backpropagation</h2>
+            To actually calculate
+            the
+            partial derivatives of all our weights we use backpropagation.
             <h4>Forward Propagation</h4>
             <p>
-                We calculate the output $o$ of our neural network by using forward propagation, for the first sample,
+                First we need to calculate the output $o$ of our neural network by using forward propagation, for the
+                first sample,
                 which
                 works just like the perceptron. We calculate $net$ and $f$ for every neuron in every layer. The output
                 of a neuron will
                 serve as input for the neurons in the next layer. Except the neurons of the output layer, which will
                 output the result of the network for a given sample.
             </p>
-            <img src="gradientDescent.png" />
-            <p>We now try to get a bit closer to the minimum, which should be exactly at $(x:0, y:0, z:0)$ in our graph.
-                We
-                achieve this by changing the weights in our network in
-                a
-                way that the output and expected output get closer. This means we need to update all weights with their
-                corresponding $\Delta w$ $$\Delta w_{mn} = -\alpha * \partial{E}/\partial{w_{mn}} .$$ The partial
-                derivative
-                is
-                the
-                slope
-                in the
-                direction of the weight w_mn. Alpha is a constant wich tells us far much we need to move down on each
-                step.
-                Having all the $\Delta w$'s we know how far we need to move in every direction of a weight. We 'collect'
-                all this down movements and calculate the 'avarage' movement of all of them: $$E\Delta=
-                \sum_{mn} \partial{E}/\partial{w_{mn}} * \Delta w = \sum_{mn} \partial{E}/\partial{w_{mn}} * -\alpha *
-                \partial{E}/\partial{w_{mn}} = -\alpha \sum_{mn} [\partial{E}/\partial{w_{mn}}]^2 $$</p>
-            <p>Now update E like the following: $$E = E\Delta + E_s$$</p> s is the Error for our first sample.
-            <p>We repeat this procedure for all our samples and until we've reached the minimum. To actually calculate
-                the
-                partial derivatives of all our weights we use backpropagation.</p>
-
-            <h2>Backpropagation</h2>
             As we don't know what the expected ouput ô of every neuron in the hidden layers is supposed to be we use
             backpropagation to propagate the ouput error (ô-o) of the output layer back to all the hidden layers. It
             calculates the partials
