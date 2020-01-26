@@ -41,9 +41,8 @@
 
         In this blog post we're going on an Odyssey to decipher the mysteries of the backpropagation algorithm which is
         a core element of supervised learning of a neural networks. It is for people who already worked a bit with
-        neural networks before but want dive deeper into the math behind the back propagation algorithm.
-        In the end we'll implement an example in Javascript.
-        Yes, JS. You've read it right.
+        neural networks before but want to dive deeper into the math behind the back propagation algorithm.
+    
         <br />
         <!--But first, let's prey to the Gods and invoke the Muse.
         <br />
@@ -179,8 +178,8 @@
         $$net = 0.1*1 + 0.5*0 = 0.1 \rightarrow f(0.1) \rightarrow 0.1
         < Threshold \rightarrow f(0.1)=0$$ <p>
             <h3>Problem of perceptron</h3>
-            The problem with the perceptron is, that it is very limited.
-            <h4>Linear Sparability</h4>
+            The perceptron is very limited. I will show you why by explaining you linear separability.
+            <h4>Linear Separability</h4>
             <p>
                 Let's plot the samples $s1=[0,0],s2=[0,1],s3=[1,0],s4=[1,1]$ of our AND perceptron as points on a graph,
                 where
@@ -212,14 +211,13 @@
             <img src="linearSepXor.svg">
             We are not able to draw a line between the two classes white (true) and black (false) to separete them.
             <br />
-            That's why we need neural networks to be able to handle more complex problems.
+            That's why we need more neurons and layers... This means we need neural networks to be able to handle more complex problems.
             <br /> <br />
             <hr />
             <h2>Neural Network</h2>
             <img src="nn.svg" />
 
-            <p>
-                To allow creating more complex applications we need more neurons and layers. A neural network is nothing
+            <p> A neural network is nothing
                 more than many connected perceptrons. The output of one perceptron is the input of the next perceptron
                 in the next layer. <br />
                 This network has an input layer, a hidden layer and an output layer.
@@ -249,12 +247,13 @@
                 approach to get a minimum of a function is to take the derivation of it. Since a
                 neural network can have
                 billions
-                of attributes instead of two (x1, x2) as shown above, we can't do that. This
+                of attributes and therfore we got a function with many many many variables... instead of two (x1, x2) as shown above, we can't do that. This
                 would take ages. Instead we use a technique called
                 <strong>Gradient
                     Descent</strong>.
             </p>
             <p>Let's say we have just two attributes as above. (This makes it possible to plot in the 3D space)</p>
+            <div><img src="gradientDescent.png" /></div>
 
             <p>The minimum as should be exactly at $(x:0, y:0, z:0)$ in our graph.
                 We get to the minimum by changing the weights by in our network in a
@@ -265,14 +264,13 @@
                 corresponding $\Delta w$ $$\Delta w_{mn} = -\alpha * \partial{E}/\partial{w_{mn}} .$$ Alpha is a
                 constant wich tells us far much we need to move down on each
                 step.
-                Having all the $\Delta w$'s we know how far we need to move in every direction of a weight. We 'collect'
-                all this down movements and calculate the 'avarage' movement of all of them: $$E\Delta=
+                Having all the $\Delta w$'s we know how far we need to move in every direction of a weight. We take
+                all this down movements and calculate the avarage movement of all of them: $$\Delta E=
                 \sum_{mn} \partial{E}/\partial{w_{mn}} * \Delta w = \sum_{mn} \partial{E}/\partial{w_{mn}} * -\alpha *
                 \partial{E}/\partial{w_{mn}} = -\alpha \sum_{mn} [\partial{E}/\partial{w_{mn}}]^2 $$</p>
-            <p>Now we update E like the following: $$E = E\Delta + E_s$$</p> s is the Error for our first sample.
+            <p>Now we update E like the following: $$E = \Delta E + E_s$$</p> s is the Error for our first sample.
             <p>We repeat this procedure for all our samples and until we've reached the minimum. </p>
             But how do we calculate our gradients?
-            <img src="gradientDescent.png" />
 
             <h2>Backpropagation</h2>
             To actually calculate
@@ -291,15 +289,15 @@
             As we don't know what the expected ouput ô of every neuron in the hidden layers is supposed to be we use
             backpropagation to propagate the ouput error (ô-o) of the output layer back to all the hidden layers. It
             calculates the partials
-            $$\partial{E}/\partial{w_{mn}}$$ for every weight in the network to calculate the corresponding w_delta to
+            $$\frac{\partial{E}}{\partial{w_{mn}}}$$ for every weight in the network to calculate the corresponding $\Delta w$ to
             update the weight. These are the update rules for each weight:
             <ol>
-                <li>$$\delta_i = f'(net_i)*(ô_i-o_i)$$</li>
                 <li>For the ouput layer: $$w_\Delta = \alpha * o_{j} * \delta_i$$</li>
                 <li>For the hidden layers: $$w_\Delta=\alpha * o_{i} * f'(net) * \sum_{k}(\delta_k*w_{ki})$$</li>
             </ol>
+            <div>Where $o_j$ is the output of the previous neuron and $\delta_i$ is: $$\delta_i = f'(net_i)*(ô_i-o_i)$$</div>
             <p>
-                o_j is the activation of the previous neuron. $$\sum_{k}(\delta_k*w_{ki})$$ is the summation of the
+                $$\sum_{k}(\delta_k*w_{ki})$$ is the summation of the
                 product
                 of errors
                 and weights of the next layer closer to the final output layer (until recursively the final layer is
@@ -316,17 +314,17 @@
 
                 to be able to update the weights and decreasing the global error.</p>
 
-            We start with the derivation of a sigle weight w^i_11 on the output layer (See image above between a1 and
+            We start with the derivation of a sigle weight $w^i_11$ on the output layer (See image above between a1 and
             o1):
-            Since w_mn is not directly a part of the equation of the cost fucntion E
+            Since $w^i_{11}$ is not directly a part of the equation of the cost fucntion E
             $$ E = \frac{1}{2} \sum_{s} (ô^s-o^s)^2$$ we need to apply the chain rule.
-            $$\partial E / \partial w_{mn} = \partial E / \partial w_{mn} * \partial E \ o $$
+            $$\frac{\partial E}{\partial w^i_{11}} = \frac{\partial E}{\partial w^i_{11}} * \frac{\partial E}{o} $$
             We need to apply the chain rule a second time, because w^i_11 is not part of the function o $$o=f(net)$$
             $$
-            \frac{\partial E}{\partial w_{mn}} =
+            \frac{\partial E}{\partial w^i_{11}} =
             \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net} *
-            \frac{\partial net}{\partial w_{mn}} $$
-            We can stop applying the chain rule now, because we know the w^i_11 is inside the function net $$ net =
+            \frac{\partial net}{\partial w^i_{11}} $$
+            We can stop applying the chain rule now, because we know the $w^i_{11}$ is inside the function net $$ net =
             \sum_{j}
             w_{ij} * x_{i}$$
 
@@ -348,19 +346,20 @@
             -(ô-o) * f'(net_j) *
             \frac{\partial net_j}{\partial w^i_{11}} $$
 
-            Now we have $$net_j = \sum_i(w_{ij} * a_{i}) = w^i_{11} * a1 + w^i_{12} * a2$$
+            Now we have $$net_j = \sum_i(w_{ij} * a_{i}) = w^i_{11} * a_1 + w^i_{12} * a_2$$
 
-            and after deriving by $$w^i_{11}$$
+            and after deriving by $w^i_{11}$
             we get
 
             $$\frac{\partial E}{\partial w^i_{11}} =
-            -(ô-o) * f'(net_j) * a_i $$
+            -(ô-o) * f'(net_j) * a_1 $$
 
-            Now we set $$\delta = -(ô-o) * f'(net_j)$$ and get our:
-            $$w_\delta = \alpha * a_i * \delta$$
+            Now we set $$\delta = -(ô-o) * f'(net_j)$$ and get first rule our:
+            $$\Delta w = \alpha * a_i * \delta$$
             for the output layer.
 
-            We repeat the same for the weight $$w^k_{11}$$ between our input layer and our hidden layer.
+            </p>
+            <p>We repeat the same for the weight $w^k_{11}$ between our input layer and our hidden layer.
             $$
             \frac{\partial E}{\partial w^k_{11}} =
             \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
@@ -374,10 +373,8 @@
             \frac{\partial net_j}{\partial a_{i}} *
             \frac{\partial a_i}{\partial w^k_{11}} $$
 
-            Also the activation function of $$a_i = f(net_i)$$ does not contain $$w^k_{11}$$. That's why we apply the
-            chain
-            rule
-            again.
+            Also the activation function of $a_i = f(net_i)$ does not contain $w^k_{11}$. That's why we apply the
+            chain rule again.
 
             $$\frac{\partial E}{\partial w^k_{11}} =
             \frac{\partial E}{\partial o} * \frac{\partial o}{\partial net_j} *
@@ -385,10 +382,11 @@
             \frac{\partial a_i}{\partial net_i} *
             \frac{\partial net_i}{\partial w^k_{11}} $$
 
-            Our net_i contains w^k_{11}:
+            Our net_i contains $w^k_{11}$:
             $$net_i = \sum_k(w_{ki} * a_{k}) = w^k_{11} * x1 + w^k_{12} * x2$$
 
-            We can stop applying the chain rule now. All we need to do is to resolve the above derivation terms. This
+            We can stop applying the chain rule now. <br /> 
+            All we need to do is to resolve the above derivation terms. This
             time
             we can't remove the summation from our E function, because we need all the neurons of the output function to
             get
@@ -401,7 +399,7 @@
             \frac{\partial net_i}{\partial w^k_{11}} $$
 
             $$\frac{\partial E}{\partial w^k_{11}} =
-            \sum_j(-(ô-o)) * f_j'(net_j) *
+            \sum_j-(ô-o) * f_j'(net_j) *
             w^j_{ij} *
             f_i'(net_i) *
             \frac{\partial net_i}{\partial w^k_{11}} $$
@@ -415,7 +413,7 @@
 
             We set $$\delta = -(ô-o) * f_j'(net_j)$$
 
-            and get
+            and get the second rule
 
             $$\frac{\partial E}{\partial w^k_{11}} =
             x_k * f_i'(net_i) * \sum_j(\delta *
@@ -426,16 +424,6 @@
             x_k * f_i'(net_i) * \sum_j(\delta *
             w^j_{ij})$$
             for the hidden layer.
-
-            <h3>Algorithm</h3>
-            <h2>Javascript Example</h2>
-            $$
-            M = \left( \begin{array}{ccc}
-            x_{11} & x_{12} & \ldots \\
-            x_{21} & x_{22} & \ldots \\
-            \vdots & \vdots & \ldots \\
-            \end{array} \right)
-            $$
     </div>
 </body>
 
